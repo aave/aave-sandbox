@@ -27,7 +27,7 @@
   "scripts": {
     "compile": "SKIP_LOAD=true hardhat compile",
     "node:subtask": "env-cmd --use-shell \"hardhat node --fork https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY} --fork-block-number 13810000\"",
-    "node": "env-cmd --use-shell \"npm run node:subtask\"",
+    "node": "npm run compile && env-cmd --use-shell \"npm run node:subtask\"",
     "node:fork:arc": "MARKET=arc npm run node",
     "node:fork:main": "MARKET=main npm run node",
     "feed-market:arc": "hardhat --network localhost feed-market --market arc",
