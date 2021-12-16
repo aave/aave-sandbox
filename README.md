@@ -85,7 +85,13 @@ You can use the following command as a faucet to get all ERC20 tokens being used
 npm run feed-accounts:arc --accounts 0x976EA74026E726554dB657fA54763abd0C3a0aa9,<other-user-address>
 ```
 
-Now you can connect to the Hardhat Node via JSON RPC at `http://127.0.0.1:8545/` in your project and use official deployed addresses to interact with the market.
+For whitelisting your accounts or smart contracts like liquidation bots into Aave Arc Sandbox, you can use the following command:
+
+```
+whitelist-accounts:arc --accounts <your-account-address>,<your-smart-contract-address>
+```
+
+Now you can connect your project to the Hardhat Node via JSON RPC at `http://127.0.0.1:8545/` in your project and use official deployed addresses to interact with the market.
 
 ## Aave V2 Main
 
