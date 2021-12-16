@@ -30,6 +30,7 @@
     "feed-market:arc": "hardhat --network localhost feed-market --market arc",
     "feed-market:main": "hardhat --network localhost feed-market --market main",
     "feed-accounts:arc": "hardhat --network localhost feed-accounts --market arc",
-    "feed-accounts:main": "hardhat --network localhost feed-accounts --market main"
+    "feed-accounts:main": "hardhat --network localhost feed-accounts --market main",
+    "print-accounts:arc": "hardhat --network localhost print-accounts --market arc"
   }
 }

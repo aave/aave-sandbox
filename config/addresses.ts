@@ -1,7 +1,7 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { ILendingPoolAddressesProvider } from "./../typechain-types/ILendingPoolAddressesProvider";
 import { ILendingPool } from "./../typechain-types/ILendingPool";
 import { ILendingPoolConfigurator } from "./../typechain-types/ILendingPoolConfigurator";
-import { IPriceOracle } from "./../typechain-types/IPriceOracle";
+import { AaveOracle } from "./../typechain-types/AaveOracle";
 import { AaveProtocolDataProvider } from "./../typechain-types/AaveProtocolDataProvider";
 import { IPermissionManager } from "./../typechain-types/IPermissionManager";
 import { getContract } from "./../helpers/utils";
@@ -43,10 +43,10 @@ export const getMarketConfig = (marketId: MarketIds): MarketAddresses => {
 };
 
 export const getMarketInstances = async (addresses: MarketAddresses) => {
-  const addressesProvider = await getContract(
+  const addressesProvider = (await getContract(
     "ILendingPoolAddressesProvider",
     addresses.addressesProvider
-  );
+  )) as ILendingPoolAddressesProvider;
   const pool = (await getContract(
     "ILendingPool",
     addresses.pool
@@ -60,9 +60,9 @@ export const getMarketInstances = async (addresses: MarketAddresses) => {
     addresses.permissionsManager
   )) as IPermissionManager;
   const priceOracle = (await getContract(
-    "IPriceOracle",
+    "AaveOracle",
     addresses.priceOracle
-  )) as IPriceOracle;
+  )) as AaveOracle;
   const dataProvider = (await getContract(
     "AaveProtocolDataProvider",
     addresses.dataProvider

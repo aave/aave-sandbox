@@ -1,3 +1,4 @@
+import { ALCHEMY_KEY } from "./../config/env";
 import { IERC20 } from "./../typechain-types/IERC20";
 import { BigNumber, Contract, ContractTransaction, Signer } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
@@ -10,6 +11,7 @@ import {
   parseUnits,
 } from "ethers/lib/utils";
 import Bluebird from "bluebird";
+import { MarketIds } from "../config/types";
 
 declare var hre: HardhatRuntimeEnvironment;
 
@@ -159,6 +161,20 @@ export const getTokenSymbol = async (token: string) => {
   return symbol;
 };
 
+export const formatTokenBalance = async (
+  baseAmount: BigNumber,
+  token: string
+) => {
+  const erc20Instance = (await getContract(
+    "IERC20Detailed",
+    token
+  )) as IERC20Detailed;
+
+  const decimals = await erc20Instance.decimals();
+
+  return formatUnits(baseAmount, decimals);
+};
+
 export const getUserBalances = async (
   accountAddress: string,
   tokens: string[]
@@ -205,4 +221,24 @@ export const impersonateAddress = async (address: string): Promise<Signer> => {
   const signer = await provider.getSigner(address);
 
   return signer;
+};
+
+export const evmSnapshot = async () =>
+  await hre.ethers.provider.send("evm_snapshot", []);
+
+export const evmRevert = async (id: string) =>
+  hre.ethers.provider.send("evm_revert", [id]);
+
+export const evmResetFork = async () => {
+  await hre.network.provider.request({
+    method: "hardhat_reset",
+    params: [
+      {
+        forking: {
+          jsonRpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
+          blockNumber: 13810000,
+        },
+      },
+    ],
+  });
 };

@@ -22,6 +22,7 @@ const config: HardhatUserConfig = {
         mnemonic: "test test test test test test test test test test test junk",
         count: 20,
       },
+      saveDeployments: false,
     },
     hardhat: {
       forking: buildForkConfig(),
@@ -32,8 +33,11 @@ const config: HardhatUserConfig = {
       "@aave/protocol-v2/contracts/interfaces/ILendingPool.sol",
       "@aave/protocol-v2/contracts/interfaces/ILendingPoolConfigurator.sol",
       "@aave/protocol-v2/contracts/interfaces/IPriceOracle.sol",
+      "@aave/protocol-v2/contracts/misc/AaveOracle.sol",
       "@aave/protocol-v2/contracts/interfaces/IPermissionManager.sol",
       "@aave/protocol-v2/contracts/misc/AaveProtocolDataProvider.sol",
+      "@aave/protocol-v2/contracts/mocks/oracle/CLAggregators/MockAggregator.sol",
+      "@aave/protocol-v2/contracts/misc/UiPoolDataProvider.sol",
     ],
   },
 };

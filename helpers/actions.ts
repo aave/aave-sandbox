@@ -1,3 +1,5 @@
+import { AaveOracle } from "./../typechain-types/AaveOracle";
+import { MockAggregator__factory } from "./../typechain-types/factories/MockAggregator__factory";
 import { IERC20Detailed__factory } from "./../typechain-types/factories/IERC20Detailed__factory";
 import { MAX_UINT_AMOUNT } from "./../config/constants";
 import { IPriceOracle } from "./../typechain-types/IPriceOracle";
@@ -5,6 +7,7 @@ import { ILendingPool } from "./../typechain-types/ILendingPool";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import Bluebird from "bluebird";
 import {
+  formatTokenBalance,
   getContract,
   getErc20,
   getTokenSymbol,
@@ -63,10 +66,15 @@ export const borrowFromMarket = async (
   borrowers: SignerWithAddress[],
   borrowableAssets: Token[],
   pool: ILendingPool,
-  priceOracle: IPriceOracle,
+  priceOracle: AaveOracle,
   borrowFactor = "9500"
 ) => {
   await Bluebird.each(borrowers, async (borrower) => {
+    const userGlobalData = await pool.getUserAccountData(borrower.address);
+    const divisionAvailableEth = userGlobalData.availableBorrowsETH.div(
+      borrowableAssets.length
+    );
+
     await Bluebird.each(borrowableAssets, async ({ tokenAddress }) => {
       const poolInstance = pool.connect(borrower);
       const detailed = (await getContract(
@@ -75,14 +83,12 @@ export const borrowFromMarket = async (
       )) as IERC20Detailed;
       const decimals = await detailed.decimals();
 
-      const userGlobalData = await pool.getUserAccountData(borrower.address);
-
       const tokenPrice = await priceOracle.getAssetPrice(tokenAddress);
 
       const amountToBorrow = parseUnits(
-        BigNumber.from(userGlobalData.availableBorrowsETH.toString())
+        divisionAvailableEth
           .div(tokenPrice)
-          .percentMul(borrowFactor)
+          .percentMul(BigNumber.from(borrowFactor))
           .toString(),
         decimals
       );
@@ -121,18 +127,23 @@ export const addPermissions = async (
   });
 };
 
+export const formatHealthFactor = (health: BigNumber) => {
+  let healthFactor = "UNDEFINED";
+  if (health.lt(MAX_UINT_AMOUNT)) {
+    healthFactor = formatUnits(health, "18");
+  } else if (health.eq(MAX_UINT_AMOUNT)) {
+    healthFactor = "MAX";
+  }
+  return healthFactor;
+};
+
 export const printHealthFactor = async (
   users: string[],
   pool: ILendingPool
 ) => {
   const userToHf = await Bluebird.map(users, async (user) => {
     const accountData = await pool.getUserAccountData(user);
-    let healthFactor = "UNDEFINED";
-    if (accountData.healthFactor.lt(MAX_UINT_AMOUNT)) {
-      healthFactor = formatUnits(accountData.healthFactor, "18");
-    } else if (accountData.healthFactor.eq(MAX_UINT_AMOUNT)) {
-      healthFactor = "MAX";
-    }
+    const healthFactor = formatHealthFactor(accountData.healthFactor);
 
     return {
       user,
@@ -140,4 +151,36 @@ export const printHealthFactor = async (
     };
   });
   console.table(userToHf);
+};
+
+export const replaceOracleSources = async (
+  priceFactor: string,
+  tokens: string[],
+  priceOracle: AaveOracle
+) => {
+  const [from] = await hre.getUnnamedAccounts();
+  const priceOracleMocks = await Bluebird.map(
+    tokens,
+    async (token) => {
+      const priceInQuoteCurrency = (
+        await priceOracle.getAssetPrice(token)
+      ).percentMul(priceFactor);
+      return (
+        await hre.deployments.deploy(`MockAggregator-${token}`, {
+          contract: "MockAggregator",
+          from,
+          args: [priceInQuoteCurrency],
+        })
+      ).address;
+    },
+    { concurrency: 1 }
+  );
+  const owner = await impersonateAddress(await priceOracle.owner());
+  await hre.network.provider.send("hardhat_setBalance", [
+    await owner.getAddress(),
+    "0x56BC75E2D63100000",
+  ]);
+  await waitForTx(
+    await priceOracle.connect(owner).setAssetSources(tokens, priceOracleMocks)
+  );
 };
