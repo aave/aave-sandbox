@@ -2,6 +2,12 @@
 
 Sandbox of Aave Markets that replicates a forked production environment. The environment is envisioned for testing liquidations or other integrations that requires a production state using Hardhat Node and Alchemy.
 
+## Requisites
+
+- Git
+- Node.js version >= 16
+  - You can install and manage any Node.js version easily with [nvm](https://github.com/nvm-sh/nvm)
+
 ## Getting Started
 
 Clone the repository:
