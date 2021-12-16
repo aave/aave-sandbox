@@ -1,7 +1,7 @@
 {
   "name": "aave-sandbox",
   "engines": {
-    "node": ">=16.0.0"
+    "node": "=16"
   },
   "devDependencies": {
     "@aave/protocol-v2": "github:aave/protocol-v2#b533f961d2ee4dbc0b86e4002fea30c487ad3fab",
