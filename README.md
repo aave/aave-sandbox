@@ -94,14 +94,14 @@ If you want to integrate the permissionless Aave market, you can also spin a san
 In a separate window, run the sandbox Hardhat node that will be reachable via JSON RPC at `http://127.0.0.1:8545/`. You can spin the sandbox node with the following command:
 
 ```
-npm run node:fork:arc
+npm run node:fork:main
 ```
 
 Now you can connect to the Hardhat Node via JSON RPC at `http://127.0.0.1:8545/` in your project and use official deployed addresses to interact with the market.
 
 Once the node is running, the following tasks will point to the sandbox node.
 
-To add liquidity to the Aave Arc, proceed to feed liquidity and create possible liquidable positions:
+To add liquidity to the Aave Main market, proceed to feed liquidity and create possible liquidable positions:
 
 ```
 npm run feed-market:main
