@@ -1,3 +1,4 @@
+import { retrieveUsers } from "./../../helpers/getters";
 import Bluebird from "bluebird";
 import { ZERO_ADDRESS } from "../../config/constants";
 import { task } from "hardhat/config";
@@ -17,39 +18,22 @@ task("print-accounts", "Print a table with accounts pool information")
   .addParam("market")
   .setAction(
     async ({ market, accounts }: { market: any; accounts: string }, hre) => {
-      const [deployer] = await hre.getUnnamedAccounts();
-      if (market != MarketIds.Arc) {
-        console.error("[print-user] This task only supports Aave Arc.");
-        return;
-      }
-      const {
-        pool,
-        permissionsManager,
-        priceOracle,
-        addressesProvider,
-        dataProvider,
-      } = await getMarketContracts(market);
-      const uiPoolArtifact = await hre.deployments.deploy(
-        "UiPoolDataProvider",
-        {
-          from: deployer,
-          args: [ZERO_ADDRESS, priceOracle.address],
-        }
+      const { pool, addressesProvider, uiPoolData } = await getMarketContracts(
+        market
       );
-      const uiPoolData = (await hre.ethers.getContractAt(
-        uiPoolArtifact.abi,
-        uiPoolArtifact.address
-      )) as UiPoolDataProvider;
 
+      console.log("\n- Retrieve users addresses list...");
       const users = accounts
         ? accounts.split(",")
-        : await getArcUsersByManager(permissionsManager, dataProvider);
+        : await retrieveUsers(market);
 
       if (!users.length) {
         console.error(
           "[print-accounts] Users not found. Market is not initialized or incorrect 'accounts' argument."
         );
       }
+      console.log(`- Found ${users.length} users`);
+      console.log("- Loading user data...\n");
       const usersData = await Bluebird.map(
         users,
         getUserData(addressesProvider, uiPoolData, pool)
@@ -67,6 +51,7 @@ task("print-accounts", "Print a table with accounts pool information")
         return false;
       });
 
+      console.log("\n==== Safe users ====\n");
       await Bluebird.each(safeUsers, (userData) => {
         console.log(`User Info:`);
         console.log("- Address:", userData.user);
@@ -74,11 +59,16 @@ task("print-accounts", "Print a table with accounts pool information")
         console.log("- Balances");
         console.table(userData.reserves);
       });
-      console.log("\n==== Possible Liquidations ==== ");
+      console.log("\n==== Possible Liquidations ====\n");
       await Bluebird.each(liquidable, (userData) => {
         console.log(`User Info:`);
         console.log("- Address:", userData.user);
-        console.log("- Health Factor:", userData.healthFactor);
+        console.log(
+          "- Health Factor:",
+          "\x1b[33m",
+          userData.healthFactor,
+          "\x1b[0m"
+        );
         console.log("- Balances");
         console.table(userData.reserves);
       });

@@ -10,4 +10,5 @@ export interface MarketAddresses {
   permissionsManager: string;
   priceOracle: string;
   dataProvider: string;
+  uiPoolData: string;
 }

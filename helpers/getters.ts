@@ -8,6 +8,18 @@ import { IPermissionManager } from "./../typechain-types/IPermissionManager";
 import { IERC20 } from "../typechain-types/IERC20";
 import { UserReserveDataStructOutput } from "../typechain-types/UiPoolDataProvider";
 import { formatHealthFactor } from "./actions";
+import { getMarketContracts } from "../config/addresses";
+import { MarketIds } from "../config/types";
+
+export const retrieveUsers = async (marketId: MarketIds) => {
+  if (marketId === MarketIds.Arc) {
+    const { permissionsManager, dataProvider } = await getMarketContracts(
+      marketId
+    );
+    return await getArcUsersByManager(permissionsManager, dataProvider);
+  }
+  throw `[retrieveUsers] Strategy to retrieve users from market ${marketId} not implemented.`;
+};
 
 export const getArcUsersByManager = async (
   instance: IPermissionManager,

@@ -7,6 +7,7 @@ import { IPermissionManager } from "./../typechain-types/IPermissionManager";
 import { getContract } from "./../helpers/utils";
 import { MarketAddresses, MarketIds } from "./types";
 import { ZERO_ADDRESS } from "./constants";
+import { UiPoolDataProvider } from "../typechain-types/UiPoolDataProvider";
 
 export const Markets: { [key: string]: MarketAddresses } = {
   [MarketIds.Main]: {
@@ -16,6 +17,7 @@ export const Markets: { [key: string]: MarketAddresses } = {
     priceOracle: "0xa50ba011c48153de246e5192c8f9258a2ba79ca9",
     dataProvider: "0x057835Ad21a177dbdd3090bB1CAE03EaCF78Fc6d",
     permissionsManager: ZERO_ADDRESS,
+    uiPoolData: "0x47e300dDd1d25447482E2F7e5a5a967EA2DA8634",
   },
   [MarketIds.Arc]: {
     addressesProvider: "0x6FdfafB66d39cD72CFE7984D3Bbcc76632faAb00",
@@ -24,6 +26,7 @@ export const Markets: { [key: string]: MarketAddresses } = {
     permissionsManager: "0xF4a1F5fEA79C3609514A417425971FadC10eCfBE",
     priceOracle: "0xb8a7bc0d13b1f5460513040a97f404b4fea7d2f3",
     dataProvider: "0x71B53fC437cCD988b1b89B1D4605c3c3d0C810ea",
+    uiPoolData: "0xED200aceFd4E63fe17B97B02d2616228d0df5398",
   },
 };
 
@@ -67,6 +70,10 @@ export const getMarketInstances = async (addresses: MarketAddresses) => {
     "AaveProtocolDataProvider",
     addresses.dataProvider
   )) as AaveProtocolDataProvider;
+  const uiPoolData = (await getContract(
+    "UiPoolDataProvider",
+    addresses.uiPoolData
+  )) as UiPoolDataProvider;
   return {
     addressesProvider,
     pool,
@@ -74,6 +81,7 @@ export const getMarketInstances = async (addresses: MarketAddresses) => {
     permissionsManager,
     priceOracle,
     dataProvider,
+    uiPoolData,
   };
 };
 
