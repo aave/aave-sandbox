@@ -136,3 +136,21 @@ User Info:
 └─────────┴───────────────────┴───────────────────┴──────────────────────────┴────────┘
 [...]
 ```
+
+## Utilities
+
+### Enable mining by interval
+
+By default Hardhat node mines blocks every time you perform a transaction, but for some scenarios you may need the node to mine blocks by interval.
+
+You can enable Hardhat to mine blocks every 5 seconds with the following command:
+
+```
+npm run set-interval-mining
+```
+
+To disable mining empty blocks, you can run:
+
+```
+npm run set-interval-mining:off
+```

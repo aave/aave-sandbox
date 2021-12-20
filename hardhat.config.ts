@@ -17,7 +17,7 @@ const config: HardhatUserConfig = {
   solidity: "0.6.12",
   networks: {
     localhost: {
-      url: "http://127.0.0.1:8545/",
+      url: "http://localhost:8545/",
       accounts: {
         mnemonic: "test test test test test test test test test test test junk",
         count: 20,

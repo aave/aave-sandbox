@@ -12,6 +12,7 @@ import {
   getErc20,
   getTokenSymbol,
   impersonateAddress,
+  setEthBalance,
   waitForTx,
 } from "./utils";
 import { BigNumber } from "ethers";
@@ -93,6 +94,8 @@ export const borrowFromMarket = async (
         decimals
       );
 
+      console.log("amount to borrow", amountToBorrow);
+
       await waitForTx(
         await poolInstance.borrow(
           tokenAddress,
@@ -113,10 +116,7 @@ export const addPermissions = async (
 ) => {
   // Impersonate Whitelister and set balance to 100 ETH
   const impersonatedOwner = await impersonateAddress(ARC_WHITELISTER);
-  await hre.network.provider.send("hardhat_setBalance", [
-    ARC_WHITELISTER,
-    "0x56BC75E2D63100000",
-  ]);
+  await setEthBalance(ARC_WHITELISTER);
 
   await Bluebird.each(roles, async (role) => {
     await waitForTx(
@@ -176,10 +176,7 @@ export const replaceOracleSources = async (
     { concurrency: 1 }
   );
   const owner = await impersonateAddress(await priceOracle.owner());
-  await hre.network.provider.send("hardhat_setBalance", [
-    await owner.getAddress(),
-    "0x56BC75E2D63100000",
-  ]);
+  await setEthBalance(await owner.getAddress());
   await waitForTx(
     await priceOracle.connect(owner).setAssetSources(tokens, priceOracleMocks)
   );

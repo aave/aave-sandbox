@@ -15,6 +15,11 @@ import { MarketIds } from "../config/types";
 
 declare var hre: HardhatRuntimeEnvironment;
 
+export interface Token {
+  symbol: string;
+  tokenAddress: string;
+}
+
 export const getContract = async <ContractType extends Contract>(
   id: string,
   address: string
@@ -124,17 +129,30 @@ export const changeBalanceStorage = async (
   ]);
 };
 
-export const feedBalances = async (accounts: string[], tokens: string[]) => {
+export const feedBalances = async (accounts: string[], tokens: Token[]) => {
   await Bluebird.each(accounts, async (accountAddress) => {
     // Set 100 ETH as balance
-    await hre.network.provider.send("hardhat_setBalance", [
-      accountAddress,
-      "0x56BC75E2D63100000",
-    ]);
-    // Set 100.000 of each ERC20 token
+    await setEthBalance(accountAddress);
+    // Set balances of each ERC20 token
     await Bluebird.each(tokens, async (token) => {
       try {
-        await changeBalanceStorage(token, accountAddress, "100000");
+        if (token.symbol == "WBTC") {
+          await changeBalanceStorage(token.tokenAddress, accountAddress, "25");
+        } else if (token.symbol == "WETH") {
+          await changeBalanceStorage(token.tokenAddress, accountAddress, "250");
+        } else if (token.symbol == "AAVE") {
+          await changeBalanceStorage(
+            token.tokenAddress,
+            accountAddress,
+            "6000"
+          );
+        } else {
+          await changeBalanceStorage(
+            token.tokenAddress,
+            accountAddress,
+            "500000"
+          );
+        }
       } catch (error) {
         console.error("[warning] balance storage layout not found for", token);
       }
@@ -210,17 +228,34 @@ export const getErc20 = async (token: string) => {
 export const waitForTx = async (tx: ContractTransaction) => await tx.wait(1);
 
 export const impersonateAddress = async (address: string): Promise<Signer> => {
-  await hre.network.provider.request({
-    method: "hardhat_impersonateAccount",
-    params: [address],
-  });
+  if (hre.network.name !== "tenderly") {
+    await hre.network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [address],
+    });
+  }
   // Fix ethers provider missing external account getSigner https://github.com/nomiclabs/hardhat/issues/1226#issuecomment-924352129
-  const provider = new hre.ethers.providers.JsonRpcProvider(
-    "http://localhost:8545"
-  );
+  const provider =
+    hre.network.name === "localhost"
+      ? new hre.ethers.providers.JsonRpcProvider("http://localhost:8545")
+      : hre.ethers.provider;
   const signer = await provider.getSigner(address);
 
   return signer;
+};
+
+export const setEthBalance = async (address: string) => {
+  if (hre.network.name == "tenderly") {
+    await hre.network.provider.send("tenderly_setBalance", [
+      address,
+      "0x56BC75E2D63100000",
+    ]);
+  } else {
+    await hre.network.provider.send("hardhat_setBalance", [
+      address,
+      "0x56BC75E2D63100000",
+    ]);
+  }
 };
 
 export const evmSnapshot = async () =>
@@ -230,13 +265,17 @@ export const evmRevert = async (id: string) =>
   hre.ethers.provider.send("evm_revert", [id]);
 
 export const evmResetFork = async () => {
+  if (hre.network.name === "tenderly") {
+    console.log("EVM Reset not implemented at Tenderly network");
+    return;
+  }
   await hre.network.provider.request({
     method: "hardhat_reset",
     params: [
       {
         forking: {
           jsonRpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
-          blockNumber: 13810000,
+          blockNumber: 13822673,
         },
       },
     ],

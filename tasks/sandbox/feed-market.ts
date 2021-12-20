@@ -34,8 +34,7 @@ task(
     const initialSnapshot = await evmSnapshot();
 
     const assets = await dataProvider.getAllReservesTokens();
-    const assetAddresses = assets.map(({ tokenAddress }) => tokenAddress);
-    const borrowableAssetsList = ["WETH", "WBTC"];
+    const borrowableAssetsList = ["WETH"];
     const borrowableAssets = assets.filter((a) =>
       borrowableAssetsList.includes(a.symbol)
     );
@@ -44,7 +43,7 @@ task(
     );
 
     // Set balances of ERC20 tokens
-    await feedBalances(userAccounts, assetAddresses);
+    await feedBalances(userAccounts, assets);
 
     console.log("- Faucet ERC20 reserves to users");
 
@@ -56,7 +55,7 @@ task(
     }
 
     // Depositors injects liquidity into market
-    await injectLiquidity(depositors, assets, pool, "9000");
+    await injectLiquidity(depositors, assets, pool, "10000");
 
     console.log(
       "- Injected liquidity from depositors:",
@@ -64,7 +63,7 @@ task(
     );
 
     // Borrowers deposits 10% of their collateral
-    await injectLiquidity(borrowers, borrowerCollateralAssets, pool, "5000");
+    await injectLiquidity(borrowers, borrowerCollateralAssets, pool, "1000");
 
     console.log(
       "- Borrowers deposited collateral:",
@@ -77,7 +76,7 @@ task(
       borrowableAssets,
       pool,
       priceOracle,
-      "9999"
+      "9900"
     );
 
     console.log(
@@ -87,12 +86,12 @@ task(
 
     // Dump collateral down to 30% of original price
     await replaceOracleSources(
-      "7000",
+      "8500",
       borrowerCollateralAssets.map(({ tokenAddress }) => tokenAddress),
       priceOracle
     );
     console.log(
-      "- Dump collateral prices up to 30% for creating liquidable positions"
+      "- Dump collateral prices up to 15% for creating liquidable positions"
     );
     console.log("- Borrowers Health Factor table");
     await printHealthFactor(

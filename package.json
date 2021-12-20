@@ -26,7 +26,7 @@
   },
   "scripts": {
     "compile": "SKIP_LOAD=true hardhat compile",
-    "node:subtask": "env-cmd --use-shell \"hardhat node --fork https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY} --fork-block-number 13810000\"",
+    "node:subtask": "env-cmd --use-shell \"hardhat node --fork https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY} --fork-block-number 13822673\"",
     "node": "npm run compile && env-cmd --use-shell \"npm run node:subtask\"",
     "node:fork:arc": "MARKET=arc npm run node",
     "node:fork:main": "MARKET=main npm run node",
@@ -36,6 +36,8 @@
     "feed-accounts:main": "hardhat --network localhost feed-accounts --market main",
     "whitelist-accounts:arc": "hardhat --network localhost whitelist-accounts:arc",
     "print-accounts:arc": "hardhat --network localhost print-accounts --market arc",
-    "print-accounts:main": "hardhat --network localhost print-accounts --market main"
+    "print-accounts:main": "hardhat --network localhost print-accounts --market main",
+    "set-interval-mining": "hardhat --network localhost set-interval-mining",
+    "set-interval-mining:off": "hardhat --network localhost set-interval-mining --interval 0"
   }
 }

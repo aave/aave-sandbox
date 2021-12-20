@@ -17,7 +17,7 @@ task(
       console.log("- Replacing ERC20 balances of:");
       console.log(userAccounts.join(", "));
 
-      await feedBalances(userAccounts, assetAddresses);
+      await feedBalances(userAccounts, assets);
 
       console.log("- Succesfully changed the balance of input addresses to:");
       console.table(await getUserBalances(userAccounts[0], assetAddresses));
