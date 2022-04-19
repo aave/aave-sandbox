@@ -1,9 +1,6 @@
 import { ALCHEMY_KEY } from "./../config/env";
-import { IERC20 } from "./../typechain-types/IERC20";
 import { BigNumber, Contract, ContractTransaction, Signer } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { IERC20Detailed } from "../typechain-types/IERC20Detailed";
-import { IERC20DetailedBytes } from "../typechain-types/IERC20DetailedBytes";
 import {
   formatEther,
   formatUnits,
@@ -12,6 +9,12 @@ import {
 } from "ethers/lib/utils";
 import Bluebird from "bluebird";
 import { MarketIds } from "../config/types";
+import {
+  IERC20Detailed,
+  IERC20DetailedBytes,
+  IERC20,
+} from "../typechain-types";
+import { buildV3ForkConfig } from "../config/hardhat-config";
 
 declare var hre: HardhatRuntimeEnvironment;
 
@@ -65,7 +68,10 @@ async function findBalancesSlot(tokenAddress: string) {
   const account = ethers.constants.AddressZero;
   const probeA = abiEncode(["uint"], [1]);
   const probeB = abiEncode(["uint"], [2]);
-  const token = await ethers.getContractAt("IERC20", tokenAddress);
+  const token = await ethers.getContractAt(
+    "@aave/core-v3/contracts/dependencies/openzeppelin/contracts/IERC20.sol:IERC20",
+    tokenAddress
+  );
   for (let i = 0; i < 100; i++) {
     let probedSlot = ethers.utils.keccak256(
       abiEncode(["address", "uint"], [account, i])
@@ -108,7 +114,10 @@ export const changeBalanceStorage = async (
   amount: string
 ) => {
   const decimals = await (
-    (await getContract("IERC20Detailed", token)) as IERC20Detailed
+    (await getContract(
+      "@aave/protocol-v2/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol:IERC20Detailed",
+      token
+    )) as IERC20Detailed
   ).decimals();
   const rawAmount = parseUnits(amount, decimals);
   const slotValue = abiEncode(["uint"], [rawAmount.toString()]);
@@ -154,6 +163,7 @@ export const feedBalances = async (accounts: string[], tokens: Token[]) => {
           );
         }
       } catch (error) {
+        console.log(error);
         console.error("[warning] balance storage layout not found for", token);
       }
     });
@@ -162,7 +172,7 @@ export const feedBalances = async (accounts: string[], tokens: Token[]) => {
 
 export const getTokenSymbol = async (token: string) => {
   const erc20Instance = (await getContract(
-    "IERC20Detailed",
+    "@aave/protocol-v2/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol:IERC20Detailed",
     token
   )) as IERC20Detailed;
 
@@ -184,10 +194,9 @@ export const formatTokenBalance = async (
   token: string
 ) => {
   const erc20Instance = (await getContract(
-    "IERC20Detailed",
+    "@aave/protocol-v2/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol:IERC20Detailed",
     token
   )) as IERC20Detailed;
-
   const decimals = await erc20Instance.decimals();
 
   return formatUnits(baseAmount, decimals);
@@ -199,7 +208,7 @@ export const getUserBalances = async (
 ) => {
   const erc20Balances = await Bluebird.map(tokens, async (token) => {
     const erc20Instance = (await getContract(
-      "IERC20Detailed",
+      "@aave/protocol-v2/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol:IERC20Detailed",
       token
     )) as IERC20Detailed;
     const decimals = await erc20Instance.decimals();
@@ -221,7 +230,9 @@ export const getUserBalances = async (
 };
 
 export const getErc20 = async (token: string) => {
-  const artifact = await hre.deployments.getArtifact("IERC20");
+  const artifact = await hre.deployments.getArtifact(
+    "@aave/core-v3/contracts/dependencies/openzeppelin/contracts/IERC20.sol:IERC20"
+  );
   return (await hre.ethers.getContractAt(artifact.abi, token)) as IERC20;
 };
 
@@ -269,13 +280,14 @@ export const evmResetFork = async () => {
     console.log("EVM Reset not implemented at Tenderly network");
     return;
   }
+  const forkConfig = buildV3ForkConfig();
   await hre.network.provider.request({
     method: "hardhat_reset",
     params: [
       {
         forking: {
-          jsonRpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
-          blockNumber: 13822673,
+          jsonRpcUrl: forkConfig?.url,
+          blockNumber: forkConfig?.blockNumber,
         },
       },
     ],

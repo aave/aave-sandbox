@@ -14,7 +14,16 @@ if (!SKIP_LOAD) {
 }
 
 const config: HardhatUserConfig = {
-  solidity: "0.6.12",
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.10",
+      },
+      {
+        version: "0.6.12",
+      },
+    ],
+  },
   networks: {
     localhost: {
       url: "http://localhost:8545/",
@@ -38,6 +47,8 @@ const config: HardhatUserConfig = {
       "@aave/protocol-v2/contracts/misc/AaveProtocolDataProvider.sol",
       "@aave/protocol-v2/contracts/mocks/oracle/CLAggregators/MockAggregator.sol",
       "@aave/protocol-v2/contracts/misc/UiPoolDataProvider.sol",
+      "@aave/periphery-v3/contracts/misc/UiPoolDataProviderV3.sol",
+      "@aave/core-v3/contracts/misc/AaveProtocolDataProvider.sol",
     ],
   },
 };

@@ -13,7 +13,9 @@ task(
       const { dataProvider } = await getMarketContracts(market);
       const userAccounts: string[] = accounts.split(",");
       const assets = await dataProvider.getAllReservesTokens();
-      const assetAddresses = assets.map(({ tokenAddress }) => tokenAddress);
+      const assetAddresses = assets.map(
+        ({ tokenAddress }: any) => tokenAddress
+      );
       console.log("- Replacing ERC20 balances of:");
       console.log(userAccounts.join(", "));
 

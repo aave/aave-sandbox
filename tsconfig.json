@@ -13,6 +13,7 @@
         "helpers",
         "config",
         "tests",
+        "typechain-types",
      ],
      "files": ["./hardhat.config.ts"]
 
