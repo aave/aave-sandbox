@@ -18,7 +18,7 @@ task(
   .addParam("market")
   .addFlag(
     "disableReset",
-    "Prevent to reset the Node state to the initial fork before feeding the market. Do not enable"
+    "Prevent to reset the Node state to the initial fork before feeding the market."
   )
   .setAction(async ({ market, disableReset }, hre) => {
     const { dataProvider, pool, permissionsManager, priceOracle } =

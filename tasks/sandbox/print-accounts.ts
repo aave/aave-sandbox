@@ -1,17 +1,9 @@
 import { retrieveUsers } from "./../../helpers/getters";
 import Bluebird from "bluebird";
-import { ZERO_ADDRESS } from "../../config/constants";
 import { task } from "hardhat/config";
 import { getMarketContracts } from "../../config/addresses";
-import { MarketIds } from "../../config/types";
-import { formatHealthFactor, printHealthFactor } from "../../helpers/actions";
-import { getArcUsersByManager, getUserData } from "../../helpers/getters";
-import {
-  UiPoolDataProvider,
-  UserReserveDataStructOutput,
-} from "../../typechain-types/UiPoolDataProvider";
-import { formatTokenBalance, getTokenSymbol } from "../../helpers/utils";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { getUserData } from "../../helpers/getters";
+import { parseEther } from "ethers/lib/utils";
 
 task("print-accounts", "Print a table with accounts pool information")
   .addOptionalParam("accounts")

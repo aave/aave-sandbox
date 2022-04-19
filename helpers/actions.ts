@@ -1,13 +1,7 @@
-import { AaveOracle } from "./../typechain-types/AaveOracle";
-import { MockAggregator__factory } from "./../typechain-types/factories/MockAggregator__factory";
-import { IERC20Detailed__factory } from "./../typechain-types/factories/IERC20Detailed__factory";
 import { MAX_UINT_AMOUNT } from "./../config/constants";
-import { IPriceOracle } from "./../typechain-types/IPriceOracle";
-import { ILendingPool } from "./../typechain-types/ILendingPool";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import Bluebird from "bluebird";
 import {
-  formatTokenBalance,
   getContract,
   getErc20,
   getTokenSymbol,
@@ -17,11 +11,15 @@ import {
 } from "./utils";
 import { BigNumber } from "ethers";
 import "./wadraymath";
-import { IPermissionManager } from "../typechain-types/IPermissionManager";
 import { ARC_WHITELISTER } from "../config/addresses";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils";
-import { IERC20Detailed } from "../typechain-types/IERC20Detailed";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import {
+  AaveOracle,
+  IERC20Detailed,
+  ILendingPool,
+  IPermissionManager,
+} from "../typechain-types";
 
 declare var hre: HardhatRuntimeEnvironment;
 
@@ -79,7 +77,7 @@ export const borrowFromMarket = async (
     await Bluebird.each(borrowableAssets, async ({ tokenAddress }) => {
       const poolInstance = pool.connect(borrower);
       const detailed = (await getContract(
-        "IERC20Detailed",
+        "@aave/protocol-v2/contracts/dependencies/openzeppelin/contracts/IERC20Detailed.sol:IERC20Detailed",
         tokenAddress
       )) as IERC20Detailed;
       const decimals = await detailed.decimals();
@@ -94,7 +92,7 @@ export const borrowFromMarket = async (
         decimals
       );
 
-      console.log("amount to borrow", amountToBorrow);
+      console.log("amount to borrow", amountToBorrow, tokenAddress);
 
       await waitForTx(
         await poolInstance.borrow(
@@ -105,6 +103,7 @@ export const borrowFromMarket = async (
           borrower.address
         )
       );
+      console.log("borrowed");
     });
   });
 };

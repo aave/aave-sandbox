@@ -1,15 +1,20 @@
-import { UiPoolDataProvider } from "./../typechain-types/UiPoolDataProvider";
-import { ILendingPoolAddressesProvider } from "./../typechain-types/ILendingPoolAddressesProvider";
-import { AaveProtocolDataProvider } from "./../typechain-types/AaveProtocolDataProvider";
 import { formatTokenBalance, getErc20, getTokenSymbol } from "./utils";
 import Bluebird, { AggregateError } from "bluebird";
-import { ILendingPool } from "./../typechain-types/ILendingPool";
-import { IPermissionManager } from "./../typechain-types/IPermissionManager";
-import { IERC20 } from "../typechain-types/IERC20";
-import { UserReserveDataStructOutput } from "../typechain-types/UiPoolDataProvider";
 import { formatHealthFactor } from "./actions";
 import { getMarketContracts } from "../config/addresses";
-import { MarketIds } from "../config/types";
+import {
+  AaveProtocolDataProviderV2,
+  AaveProtocolDataProviderV3,
+  MarketIds,
+} from "../config/types";
+import {
+  IPermissionManager,
+  IERC20,
+  ILendingPoolAddressesProvider,
+  UiPoolDataProvider,
+  UiPoolDataProviderV3,
+  ILendingPool,
+} from "../typechain-types";
 
 export const retrieveUsers = async (marketId: MarketIds) => {
   if (marketId === MarketIds.Arc) {
@@ -23,11 +28,11 @@ export const retrieveUsers = async (marketId: MarketIds) => {
 
 export const getArcUsersByManager = async (
   instance: IPermissionManager,
-  poolData: AaveProtocolDataProvider
+  poolData: AaveProtocolDataProviderV2 | AaveProtocolDataProviderV3
 ): Promise<string[]> => {
   const eventsFilter = await instance.filters.RoleSet(null, 0, null, null);
   const events = await instance.queryFilter(eventsFilter, 13431437, "latest"); // todo set blocks and parse events
-  const registered = events.reduce<string[]>((acc, event) => {
+  const registered = events.reduce<string[]>((acc: string[], event: any) => {
     if (event.args.set === true) {
       acc.push(event.args.user);
       return acc;
@@ -37,10 +42,10 @@ export const getArcUsersByManager = async (
       acc.splice(indexToRemove, 1);
     }
     return acc;
-  }, []);
+  }, [] as string[]);
 
   const assets = await poolData.getAllATokens();
-  const assetsInstances = await Bluebird.map(assets, (x) =>
+  const assetsInstances = await Bluebird.map(assets, (x: any) =>
     getErc20(x.tokenAddress)
   );
   const probeBalance = async (user: string, token: IERC20) =>
@@ -66,11 +71,11 @@ export const getArcUsersByManager = async (
 export const getUserData =
   (
     addressesProvider: ILendingPoolAddressesProvider,
-    uiPoolData: UiPoolDataProvider,
+    uiPoolData: UiPoolDataProvider | UiPoolDataProviderV3,
     pool: ILendingPool
   ) =>
   async (user: string, i: number) => {
-    const [userReservesData] = await uiPoolData.getUserReservesData(
+    const [userReservesData]: any = await uiPoolData.getUserReservesData(
       addressesProvider.address,
       user
     );
@@ -79,20 +84,17 @@ export const getUserData =
       user,
       healthFactor: formatHealthFactor(hf),
       rawHealthFactor: hf,
-      reserves: await Bluebird.map(
-        userReservesData,
-        async (x: UserReserveDataStructOutput) => ({
-          enabledCollateral: x.usageAsCollateralEnabledOnUser,
-          collateralBalance: await formatTokenBalance(
-            x.scaledATokenBalance,
-            x.underlyingAsset
-          ),
-          debtBalance: await formatTokenBalance(
-            x.scaledVariableDebt.add(x.principalStableDebt),
-            x.underlyingAsset
-          ),
-          symbol: await getTokenSymbol(x.underlyingAsset),
-        })
-      ),
+      reserves: await Bluebird.map(userReservesData, async (x: any) => ({
+        enabledCollateral: x.usageAsCollateralEnabledOnUser,
+        collateralBalance: await formatTokenBalance(
+          x.scaledATokenBalance,
+          x.underlyingAsset
+        ),
+        debtBalance: await formatTokenBalance(
+          x.scaledVariableDebt.add(x.principalStableDebt),
+          x.underlyingAsset
+        ),
+        symbol: await getTokenSymbol(x.underlyingAsset),
+      })),
     };
   };
