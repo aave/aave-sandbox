@@ -59,11 +59,6 @@ You can use the following command as a faucet to get all ERC20 tokens being used
 npm run feed-accounts:polygon-v3 --accounts 0x976EA74026E726554dB657fA54763abd0C3a0aa9,<other-user-address>
 ```
 
-To add liquidity to the Aave market, proceed to feed liquidity and create possible liquidable positions:
-
-```
-npm run feed-market:polygon-v3
-```
 
 View users positions at the Main market and possible liquidable positions, but only limited to a subset of addresses passed by the argument `--accounts`:
 
