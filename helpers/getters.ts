@@ -5,8 +5,8 @@ import { getMarketContracts } from "../config/addresses";
 import {
   AaveProtocolDataProviderV2,
   AaveProtocolDataProviderV3,
-  MarketIds,
-} from "../config/types";
+} from "../config/sc-types";
+import { MarketIds } from "../config/types";
 import {
   IPermissionManager,
   IERC20,
