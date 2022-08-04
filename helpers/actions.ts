@@ -1,4 +1,4 @@
-import { MAX_UINT_AMOUNT } from "./../config/constants";
+import { MAX_UINT_AMOUNT, ZERO_ADDRESS } from "./../config/constants";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import Bluebird from "bluebird";
 import {
@@ -9,17 +9,21 @@ import {
   setEthBalance,
   waitForTx,
 } from "./utils";
-import { BigNumber } from "ethers";
+import { BigNumber, Signer } from "ethers";
 import "./wadraymath";
 import { ARC_WHITELISTER } from "../config/addresses";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 import {
   AaveOracle,
+  IACLManager__factory,
   IERC20Detailed,
   ILendingPool,
   IPermissionManager,
+  IPoolAddressesProvider__factory,
 } from "../typechain-types";
+import { oracle } from "../typechain-types/@aave/protocol-v2/contracts/mocks";
+import { IAaveOracle__factory } from "../typechain-types/factories/@aave/core-v3/contracts/interfaces/IAaveOracle__factory";
 
 declare var hre: HardhatRuntimeEnvironment;
 
@@ -174,9 +178,36 @@ export const replaceOracleSources = async (
     },
     { concurrency: 1 }
   );
-  const owner = await impersonateAddress(await priceOracle.owner());
-  await setEthBalance(await owner.getAddress());
+  // Try first to use V2 oracle interface, if not load V3 oracle interface
+  let oracleOwner: Signer;
+  try {
+    // Get V2 Oracle admin
+    oracleOwner = await impersonateAddress(await priceOracle.owner());
+  } catch (error) {
+    // Get V3 Oracle admin
+    const caller = await hre.ethers.getSigner(from);
+    const provider = await IPoolAddressesProvider__factory.connect(
+      await IAaveOracle__factory.connect(
+        priceOracle.address,
+        caller
+      ).ADDRESSES_PROVIDER(),
+      caller
+    );
+    const aclAdmin = await impersonateAddress(await provider.getACLAdmin());
+    const aclManager = await IACLManager__factory.connect(
+      await provider.getACLManager(),
+      aclAdmin
+    );
+    await setEthBalance(await aclAdmin.getAddress());
+    await aclManager.addAssetListingAdmin(from);
+    oracleOwner = caller;
+  }
+
+  await setEthBalance(await oracleOwner.getAddress());
+
   await waitForTx(
-    await priceOracle.connect(owner).setAssetSources(tokens, priceOracleMocks)
+    await priceOracle
+      .connect(oracleOwner)
+      .setAssetSources(tokens, priceOracleMocks)
   );
 };

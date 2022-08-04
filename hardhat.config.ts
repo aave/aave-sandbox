@@ -49,6 +49,9 @@ const config: HardhatUserConfig = {
       "@aave/protocol-v2/contracts/misc/UiPoolDataProvider.sol",
       "@aave/periphery-v3/contracts/misc/UiPoolDataProviderV3.sol",
       "@aave/core-v3/contracts/misc/AaveProtocolDataProvider.sol",
+      "@aave/core-v3/contracts/interfaces/IAaveOracle.sol",
+      "@aave/core-v3/contracts/interfaces/IPoolAddressesProvider.sol",
+      "@aave/core-v3/contracts/interfaces/IACLManager.sol",
     ],
   },
 };
