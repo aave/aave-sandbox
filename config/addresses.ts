@@ -1,10 +1,5 @@
 import { getContract } from "./../helpers/utils";
-import {
-  AaveProtocolDataProviderV2,
-  AaveProtocolDataProviderV3,
-  MarketAddresses,
-  MarketIds,
-} from "./types";
+import { MarketAddresses, MarketIds } from "./types";
 import { ZERO_ADDRESS } from "./constants";
 import {
   ILendingPoolAddressesProvider,
@@ -15,6 +10,10 @@ import {
   UiPoolDataProviderV3,
   UiPoolDataProvider,
 } from "../typechain-types";
+import {
+  AaveProtocolDataProviderV2,
+  AaveProtocolDataProviderV3,
+} from "./sc-types";
 const DETERMINISTIC_V3_ADDRESSES: MarketAddresses = {
   addressesProvider: "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb",
   pool: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
