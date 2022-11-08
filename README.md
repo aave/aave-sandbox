@@ -22,6 +22,12 @@ Install dependencies:
 npm i
 ```
 
+Compile Contract:
+
+```
+npm run compile
+```
+
 Create a `.env` file
 
 ```
@@ -58,7 +64,6 @@ You can use the following command as a faucet to get all ERC20 tokens being used
 ```
 npm run feed-accounts:polygon-v3 --accounts 0x976EA74026E726554dB657fA54763abd0C3a0aa9,<other-user-address>
 ```
-
 
 View users positions at the Main market and possible liquidable positions, but only limited to a subset of addresses passed by the argument `--accounts`:
 
