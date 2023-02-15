@@ -38,6 +38,7 @@
     "node:fork:optimism-v3": "FORK=optimism MARKET=optimism-v3 npm run node",
     "node:fork:fantom-v3": "FORK=fantom MARKET=fantom-v3 npm run node",
     "node:fork:harmony-v3": "FORK=harmony MARKET=harmony-v3 npm run node",
+    "node:fork:main-v3": "FORK=mainnet MARKET=main-v3 npm run node",
     "feed-market:arc": "hardhat --network localhost feed-market --market arc",
     "feed-market:main-v2": "FORK=main hardhat --network localhost feed-market --market main-v2",
     "feed-market:avalanche-v3": "FORK=avalanche hardhat --network localhost feed-market --market avalanche-v3",
@@ -46,6 +47,7 @@
     "feed-market:optimism-v3": "FORK=optimism hardhat --network localhost feed-market --market optimism-v3",
     "feed-market:fantom-v3": "FORK=fantom hardhat --network localhost feed-market --market fantom-v3",
     "feed-market:harmony-v3": "FORK=harmony hardhat --network localhost feed-market --market harmony-v3",
+    "feed-market:main-v3": "FORK=mainnet hardhat --network localhost feed-market --market main-v3",
     "feed-accounts:arc": "hardhat --network localhost feed-accounts --market arc",
     "feed-accounts:main-v2": "hardhat --network localhost feed-accounts --market main-v2",
     "feed-accounts:polygon-v3": "hardhat --network localhost feed-accounts --market polygon-v3",
@@ -54,6 +56,7 @@
     "feed-accounts:optimism-v3": "hardhat --network localhost feed-accounts --market optimism-v3",
     "feed-accounts:arbitrum-v3": "hardhat --network localhost feed-accounts --market arbitrum-v3",
     "feed-accounts:avalanche-v3": "hardhat --network localhost feed-accounts --market avalanche-v3",
+    "feed-accounts:main-v3": "hardhat --network localhost feed-accounts --market main-v3",
     "whitelist-accounts:arc": "hardhat --network localhost whitelist-accounts:arc",
     "print-accounts:arc": "hardhat --network localhost print-accounts --market arc",
     "print-accounts:main-v2": "hardhat --network localhost print-accounts --market main-v2",
@@ -62,6 +65,7 @@
   },
   "dependencies": {
     "@aave/core-v3": "^1.13.1",
-    "@aave/periphery-v3": "^1.10.0"
+    "@aave/periphery-v3": "^1.10.0",
+    "@bgd-labs/aave-address-book": "^1.17.0"
   }
 }
