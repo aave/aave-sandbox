@@ -16,11 +16,11 @@ import {
   AaveProtocolDataProviderV3,
 } from "./sc-types";
 const DETERMINISTIC_V3_ADDRESSES: MarketAddresses = {
-  addressesProvider: "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb",
-  pool: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-  poolConfigurator: "0x8145eddDf43f50276641b55bd3AD95944510021E",
-  priceOracle: "0xb023e699F5a33916Ea823A16485e259257cA8Bd1",
-  dataProvider: "0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654",
+  addressesProvider: markets.AaveV3Polygon.POOL_ADDRESSES_PROVIDER,
+  pool: markets.AaveV3Polygon.POOL,
+  poolConfigurator: markets.AaveV3Polygon.POOL_CONFIGURATOR,
+  priceOracle: markets.AaveV3Polygon.ORACLE,
+  dataProvider: markets.AaveV3Polygon.AAVE_PROTOCOL_DATA_PROVIDER,
   permissionsManager: ZERO_ADDRESS,
   uiPoolData: ZERO_ADDRESS,
 };
@@ -135,23 +135,23 @@ export const getMarketInstances = async (
   const dataProvider =
     version === 3
       ? ((await getContract(
-          "@aave/core-v3/contracts/misc/AaveProtocolDataProvider.sol:AaveProtocolDataProvider",
-          addresses.dataProvider
-        )) as AaveProtocolDataProviderV3)
+        "@aave/core-v3/contracts/misc/AaveProtocolDataProvider.sol:AaveProtocolDataProvider",
+        addresses.dataProvider
+      )) as AaveProtocolDataProviderV3)
       : ((await getContract(
-          "@aave/protocol-v2/contracts/misc/AaveProtocolDataProvider.sol:AaveProtocolDataProvider",
-          addresses.dataProvider
-        )) as AaveProtocolDataProviderV2);
+        "@aave/protocol-v2/contracts/misc/AaveProtocolDataProvider.sol:AaveProtocolDataProvider",
+        addresses.dataProvider
+      )) as AaveProtocolDataProviderV2);
   const uiPoolData =
     version === 3
       ? ((await getContract(
-          "UiPoolDataProviderV3",
-          addresses.uiPoolData
-        )) as UiPoolDataProviderV3)
+        "UiPoolDataProviderV3",
+        addresses.uiPoolData
+      )) as UiPoolDataProviderV3)
       : ((await getContract(
-          "UiPoolDataProvider",
-          addresses.uiPoolData
-        )) as UiPoolDataProvider);
+        "UiPoolDataProvider",
+        addresses.uiPoolData
+      )) as UiPoolDataProvider);
   return {
     addressesProvider,
     pool,
