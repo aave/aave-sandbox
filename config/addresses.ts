@@ -33,7 +33,7 @@ export const Markets: { [key: string]: MarketAddresses } = {
     priceOracle: markets.AaveV2Ethereum.ORACLE,
     dataProvider: markets.AaveV2Ethereum.AAVE_PROTOCOL_DATA_PROVIDER,
     permissionsManager: ZERO_ADDRESS,
-    uiPoolData: markets.AaveV2Ethereum.UI_POOL_DATA_PROVIDER,
+    uiPoolData: '0xED200aceFd4E63fe17B97B02d2616228d0df5398', // older typechain version 
   },
   [MarketIds.MainV3]: {
     addressesProvider: markets.AaveV3Ethereum.POOL_ADDRESSES_PROVIDER,
@@ -42,7 +42,7 @@ export const Markets: { [key: string]: MarketAddresses } = {
     priceOracle: markets.AaveV3Ethereum.ORACLE,
     dataProvider: markets.AaveV3Ethereum.AAVE_PROTOCOL_DATA_PROVIDER,
     permissionsManager: ZERO_ADDRESS,
-    uiPoolData: '0x47e300dDd1d25447482E2F7e5a5a967EA2DA8634' // using older typechain version
+    uiPoolData: markets.AaveV3Ethereum.UI_POOL_DATA_PROVIDER,
   },
   [MarketIds.Arc]: {
     addressesProvider: markets.AaveV2EthereumArc.POOL_ADDRESSES_PROVIDER,
