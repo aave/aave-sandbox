@@ -94,9 +94,6 @@ export const NETWORKS_RPC_URL: iParamsPerNetwork<string> = {
   [eEthereumNetwork.main]: `https://eth-mainnet.alchemyapi.io/v2/${getAlchemyKey(
     eEthereumNetwork.main
   )}`,
-  [eEthereumNetwork.mainnet]: `https://eth-mainnet.alchemyapi.io/v2/${getAlchemyKey(
-    eEthereumNetwork.main
-  )}`,
   [eEthereumNetwork.coverage]: "http://localhost:8555",
   [eEthereumNetwork.hardhat]: "http://localhost:8545",
   [ePolygonNetwork.mumbai]: `https://polygon-mumbai.g.alchemy.com/v2/${getAlchemyKey(

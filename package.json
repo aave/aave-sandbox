@@ -48,7 +48,7 @@
     "feed-market:optimism-v3": "FORK=optimism hardhat --network localhost feed-market --market optimism-v3",
     "feed-market:fantom-v3": "FORK=fantom hardhat --network localhost feed-market --market fantom-v3",
     "feed-market:harmony-v3": "FORK=harmony hardhat --network localhost feed-market --market harmony-v3",
-    "feed-market:main-v3": "FORK=mainnet hardhat --network localhost feed-market --market main-v3",
+    "feed-market:main-v3": "FORK=main hardhat --network localhost feed-market --market main-v3",
     "feed-accounts:arc": "hardhat --network localhost feed-accounts --market arc",
     "feed-accounts:main-v2": "hardhat --network localhost feed-accounts --market main-v2",
     "feed-accounts:polygon-v3": "hardhat --network localhost feed-accounts --market polygon-v3",
