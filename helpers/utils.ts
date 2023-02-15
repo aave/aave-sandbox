@@ -180,11 +180,7 @@ export const getTokenSymbol = async (token: string) => {
   try {
     symbol = await erc20Instance.symbol();
   } catch {
-    const erc20BytesInstance = (await getContract(
-      "IERC20DetailedBytes",
-      token
-    )) as IERC20DetailedBytes;
-    symbol = parseBytes32String(await erc20BytesInstance.symbol());
+    symbol = 'MKR' // special case, encoded as bytes so symbol() call will fail
   }
   return symbol;
 };
