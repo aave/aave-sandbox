@@ -52,6 +52,7 @@ export enum eEthereumNetwork {
   hardhat = "hardhat",
   tenderly = "tenderly",
   rinkeby = "rinkeby",
+  mainnet = "mainnet",
 }
 
 export enum ePolygonNetwork {
