@@ -5,6 +5,7 @@
   },
   "devDependencies": {
     "@aave/protocol-v2": "github:aave/protocol-v2#b533f961d2ee4dbc0b86e4002fea30c487ad3fab",
+    "@bgd-labs/aave-address-book": "^1.17.0",
     "@nomiclabs/hardhat-ethers": "^2.0.3",
     "@typechain/ethers-v5": "^10.0.0",
     "@typechain/hardhat": "^6.0.0",
@@ -72,7 +73,6 @@
   },
   "dependencies": {
     "@aave/core-v3": "^1.13.1",
-    "@aave/periphery-v3": "^1.10.0",
-    "@bgd-labs/aave-address-book": "^1.17.0"
+    "@aave/periphery-v3": "^1.10.0"
   }
 }
