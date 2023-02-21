@@ -43,73 +43,69 @@ Once you have the Alchemy key, open `.env` with your favorite editor and fill th
 ALCHEMY_KEY=your-alchemy-key
 ```
 
-## Fork Aave V3 markets
+## Fork Aave markets
 
-If you want to integrate any of the deployed Aave V3 markets, you can spin a sandbox node in the following way.
+If you want to integrate any of the deployed Aave markets, you can spin a sandbox node in the following way.
 
-In a separate window, run the sandbox Hardhat fork node that will be reachable via JSON RPC at `http://127.0.0.1:8545/`. You can spin the sandbox node with the following command, replacing "polygon" with the desired chain:
+In a separate window, run the sandbox Hardhat fork node that will be reachable via JSON RPC at `http://127.0.0.1:8545/`. You can spin the sandbox node with one of the following commands:
 
 ```
-npm run node:fork:polygon-v3
+node:fork:arc
+node:fork:main-v2
+node:fork:polygon-v3
+node:fork:avalanche-v3
+node:fork:arbitrum-v3
+node:fork:optimism-v3
+node:fork:fantom-v3
+node:fork:harmony-v3,
+node:fork:main-v3
 ```
 
 Now you can connect to the Hardhat Node via JSON RPC at `http://127.0.0.1:8545/` in your project and use official deployed addresses to interact with the market.
 
-Once the node is running, the following tasks will point to the sandbox node.
+Once the node is running, the following tasks will be available, and will point to the local sandbox node.
 
-If you need the official ERC20 tokens at the sandbox environment, you can get ERC20 tokens using the `feed-account` task. The task will override the balance of the address via `hardhat_setStorage`.
+    "feed-market": "hardhat --network localhost feed-market --market $0",
+    "feed-accounts": "hardhat --network localhost feed-accounts --market $0",
+    "whitelist-accounts:arc": "hardhat --network localhost whitelist-accounts --market $@",
+    "print-accounts": "hardhat --network localhost print-accounts -- $@",
 
-You can use the following command as a faucet to get all ERC20 tokens being used inside a market:
+
+
+### feed-market
+
+The `feed-market` command will add simulated users and liquidity to a forked market.
+
+Usage:
+
+```
+npm run feed-market:main-v3
+```
+
+or replace main-v3 with one of: arc, main-v2, polygon-v3, arbitrum-v3, avalanche-v3, optimism-v3, harmony-v3, fantom-v3.
+
+
+### feed-accounts
+
+You can mint official ERC20 tokens to any address using the `feed-account` task. The task will override the balance of the address via `hardhat_setStorage`.
+
+You can use the following command as a faucet to get all ERC20 tokens being used inside a market: 
 
 ```
 npm run feed-accounts:polygon-v3 -- --accounts 0x976EA74026E726554dB657fA54763abd0C3a0aa9,<other-user-address>
 ```
 
-View users positions at the Main market and possible liquidable positions, but only limited to a subset of addresses passed by the argument `--accounts`:
+Note: the extra `--` is important to pass arguments to Hardhat
+
+### print-accounts
+
+View user positions and health factors from accounts passed to  `--accounts` parameter with the following command:
 
 ```
 npm run print-accounts:polygon-v3 -- --accounts 0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f,0x14dC79964da2C08b23698B3D3cc7Ca32193d9955
 ```
 
-Output:
-
-```
-User Info:
-- Address: 0x976EA74026E726554dB657fA54763abd0C3a0aa9
-- Health Factor:  0.918421511765627487
-- Balances
-┌─────────┬───────────────────┬───────────────────┬──────────────────────────┬────────┐
-│ (index) │ enabledCollateral │ collateralBalance │       debtBalance        │ symbol │
-├─────────┼───────────────────┼───────────────────┼──────────────────────────┼────────┤
-│    0    │       true        │     '50000.0'     │          '0.0'           │ 'USDC' │
-│    1    │       false       │       '0.0'       │          '43.0'          │ 'WBTC' │
-│    2    │       false       │       '0.0'       │ '543.999999948668340512' │ 'WETH' │
-│    3    │       true        │     '50000.0'     │          '0.0'           │ 'AAVE' │
-└─────────┴───────────────────┴───────────────────┴──────────────────────────┴────────┘
-[...]
-```
-
-## Aave Arc Sandbox
-
-In a separate window, run the sandbox Hardhat node that will be reachable via JSON RPC at `http://127.0.0.1:8545/`. You can spin the sandbox node with the following command:
-
-```
-npm run node:fork:arc
-```
-
-Once the node is running, the following tasks will point to the sandbox node. You can also point your project to target the sandbox node.
-
-To add liquidity to the Aave Arc, proceed to feed liquidity and create possible liquidable positions:
-
-```
-npm run feed-market:arc
-```
-
-Once there is liquidity at the market, you can view the users balance and possible liquidable positions with the following command:
-
-```
-npm run print-accounts:arc
-```
+Note: the extra `--` is important to pass arguments to Hardhat
 
 Output:
 
@@ -129,65 +125,16 @@ User Info:
 [...]
 ```
 
-If you need the official ERC20 tokens at the sandbox environment, you can get ERC20 tokens using the `feed-account` task. The task will override the balance of the address via `hardhat_setStorage`, so do not change balances of smart contracts with internal accounting.
+### whitelist-accounts:arc
 
-You can use the following command as a faucet to get all ERC20 tokens being used inside a market:
 
-```
-npm run feed-accounts:arc --accounts 0x976EA74026E726554dB657fA54763abd0C3a0aa9,<other-user-address>
-```
-
-For whitelisting your accounts or smart contracts like liquidation bots into Aave Arc Sandbox, you can use the following command:
+For whitelisting your accounts or smart contracts like liquidation bots into Aave Arc Sandbox, you can use the following command passing in addresses to `--accounts` parameter:
 
 ```
-whitelist-accounts:arc --accounts <your-account-address>,<your-smart-contract-address>
+npm run whitelist-accounts:arc --accounts <your-account-address>,<your-smart-contract-address>
 ```
 
-Now you can connect your project to the Hardhat Node via JSON RPC at `http://127.0.0.1:8545/` in your project and use official deployed addresses to interact with the market.
-
-## Aave V2 Main
-
-If you want to integrate the permissionless Aave market, you can also spin a sandbox in the following way.
-
-In a separate window, run the sandbox Hardhat node that will be reachable via JSON RPC at `http://127.0.0.1:8545/`. You can spin the sandbox node with the following command:
-
-```
-npm run node:fork:main-v2
-```
-
-Now you can connect to the Hardhat Node via JSON RPC at `http://127.0.0.1:8545/` in your project and use official deployed addresses to interact with the market.
-
-Once the node is running, the following tasks will point to the sandbox node.
-
-To add liquidity to the Aave Main market, proceed to feed liquidity and create possible liquidable positions:
-
-```
-npm run feed-market:main-v2
-```
-
-View users positions at the Main market and possible liquidable positions, but only limited to a subset of addresses passed by the argument `--accounts`:
-
-```
-npm run print-accounts:main-v2 -- --accounts 0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f,0x14dC79964da2C08b23698B3D3cc7Ca32193d9955
-```
-
-Output:
-
-```
-User Info:
-- Address: 0x976EA74026E726554dB657fA54763abd0C3a0aa9
-- Health Factor:  0.918421511765627487
-- Balances
-┌─────────┬───────────────────┬───────────────────┬──────────────────────────┬────────┐
-│ (index) │ enabledCollateral │ collateralBalance │       debtBalance        │ symbol │
-├─────────┼───────────────────┼───────────────────┼──────────────────────────┼────────┤
-│    0    │       true        │     '50000.0'     │          '0.0'           │ 'USDC' │
-│    1    │       false       │       '0.0'       │          '43.0'          │ 'WBTC' │
-│    2    │       false       │       '0.0'       │ '543.999999948668340512' │ 'WETH' │
-│    3    │       true        │     '50000.0'     │          '0.0'           │ 'AAVE' │
-└─────────┴───────────────────┴───────────────────┴──────────────────────────┴────────┘
-[...]
-```
+Note: the extra `--` is important to pass arguments to Hardhat
 
 ## Utilities
 

@@ -7,6 +7,7 @@ export enum MarketIds {
   ArbitrumV3 = "arbitrum-v3",
   OptimismV3 = "optimism-v3",
   HarmonyV3 = "harmony-v3",
+  MainV3 = 'main-v3',
 }
 
 export interface MarketAddresses {
@@ -51,6 +52,7 @@ export enum eEthereumNetwork {
   hardhat = "hardhat",
   tenderly = "tenderly",
   rinkeby = "rinkeby",
+  mainnet = "mainnet",
 }
 
 export enum ePolygonNetwork {
